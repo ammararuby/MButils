@@ -10,10 +10,10 @@ Make sure Phyloseq package is already installed. For Phyloseq installation, use 
 
 Install "devtools" if not already installed:
 
-  install.packages("devtools")
+	install.packages("devtools")
   
 otherwise proceed as follows:
 
-  library(devtools)
+  	library(devtools)
   
-  install_github("ammararuby/MButils")
+  	install_github("ammararuby/MButils")
