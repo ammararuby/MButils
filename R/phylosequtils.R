@@ -4,7 +4,7 @@
 #'
 #' @param dataframe The dataframe containing new data to be incorporated.
 #' @param ps_object The phyloseq object to be updated with new data.
-#' @param variable The variable (column in data) by which to merge new data into phyloseq object. Variable name and values must be identical between the dataframe and the phyloseq object
+#' @param variable The variable (column in data) as a string by which to merge new data into phyloseq object. Variable name and values must be identical between the dataframe and the phyloseq object
 #'
 #' @import dplyr
 #' @import tibble
@@ -17,10 +17,7 @@
 
 merge_into_phyloseq = function(dataframe, ps_object, variable){
 
-  sam= as.data.frame(sample_data(ps_object)) %>%
-    rownames_to_column("row_names") %>%
-    remove_rownames() %>%
-    as_data_frame() %>%
+  sam = as_tibble(sample_data(pomms_clean), rownames= "row_names") %>%
     select(row_names, everything())
 
   complete_data = left_join(sam, dataframe, by= variable) %>%
