@@ -13,11 +13,10 @@
 #' @return An updated phyloseq object with the new data incorporated into sample data.
 #' @export
 #'
-#'
 
 merge_into_phyloseq = function(dataframe, ps_object, variable){
 
-  sam = as_tibble(sample_data(pomms_clean), rownames= "row_names") %>%
+  sam = as_tibble(sample_data(ps_object), rownames= "row_names") %>%
     select(row_names, everything())
 
   complete_data = left_join(sam, dataframe, by= variable) %>%
