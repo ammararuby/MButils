@@ -1,7 +1,7 @@
 Package: MButils
 Type: Package
 Title: Custom Function Container for DNA Metabarcoding
-Version: 0.1.0
+Version: 0.1.2
 Author: Ammara Aqeel <ammararuby@gmail.com>
 Maintainer: Ammara Aqeel <ammararuby@gmail.com>
 Description: This package is for sharing and maintaining custom functions written for DNA metabarcoding data analysis as conducted in the laboratory of Dr. Lawrence David at Duke University, Durham, NC.
