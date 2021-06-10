@@ -23,8 +23,8 @@
 #'   that large numbers of sequences are supported.
 #'
 #' @import dada2
-#' @import Biostrings
-#' @import ShortRead
+#' @importFrom Biostrings PDict reverseComplement vcountPDict
+#' @importFrom ShortRead id readFasta sread
 #'
 #' @return A two-column data frame matching ASVs to their exact match in the
 #'   reference, with multiple matches indicated by the presence of more than one
