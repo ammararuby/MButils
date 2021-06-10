@@ -6,9 +6,12 @@ Author: Ammara Aqeel <ammararuby@gmail.com>
 Maintainer: Ammara Aqeel <ammararuby@gmail.com>
 Description: This package is for sharing and maintaining custom functions written for DNA metabarcoding data analysis as conducted in the laboratory of Dr. Lawrence David at Duke University, Durham, NC.
 Imports:
+  Biostrings,
+  dada2,
   dplyr,
-  tibble,
-  phyloseq
+  phyloseq,
+  ShortRead,
+  tibble
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
