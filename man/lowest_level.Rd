@@ -4,14 +4,21 @@
 \alias{lowest_level}
 \title{Extract the finest taxonomic level of ASVs from a phyloseq taxonomy}
 \usage{
-lowest_level(taxtab)
+lowest_level(taxtab, unique = FALSE)
 }
 \arguments{
 \item{taxtab}{The taxonomy table of the phyloseq object to be renamed}
+
+\item{unique}{If TRUE, appends an integer count to taxa names that are
+duplicated across ASVs.}
 }
 \value{
-An updated taxonomy table, with an added column, 'name', that contains the name of the lowest phylogenetic level to which that ASV is identified.  Duplicates are labeled uniquely by appending an integer.
+An updated taxonomy table, with an added column, 'name', that
+  contains the name of the lowest phylogenetic level to which that ASV is
+  identified.  If unique = TRUE, duplicates are labeled uniquely by appending
+  an integer.
 }
 \description{
-Identifies the lowest taxonomic name available for each ASV in a phyloseq taxonomy table and aggregates them in a new column.
+Identifies the lowest taxonomic name available for each ASV in a
+  phyloseq taxonomy table and aggregates them in a new column.
 }
