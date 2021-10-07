@@ -83,7 +83,7 @@ assignSpecies_mod <- function(seqs, refFasta, tryRC=FALSE, n=2000) {
     rval %>%
     as.data.frame() %>%
     rownames_to_column(var = 'asv') %>%
-    separate_rows(Species, sep = '\\/') # "Lengthen" data-- split /-separated column entries out to multiple rows
+    tidyr::separate_rows(Species, sep = '\\/') # "Lengthen" data-- split /-separated column entries out to multiple rows
 
   # TODO: Last common ancestor??
   gc()

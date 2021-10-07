@@ -8,13 +8,15 @@
 #' @param f The path to a text file that alternates fastq.gz filenames with
 #'   their read counts.
 #'
+#' @importFrom rlang :=
+#'
 #' @return A two-column data frame matching samples to their read counts.
 #'
 #' @export
 #'
 
 parse_counts <- function(f){
-    counts.text <- read.table(f)
+    counts.text <- utils::read.table(f)
 
   # Odd rows are sample names, evens are read counts
   n <- dim(counts.text)[1]
