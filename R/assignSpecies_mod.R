@@ -23,8 +23,6 @@
 #'   that large numbers of sequences are supported.
 #'
 #' @import dada2
-#' @importFrom Biostrings PDict reverseComplement vcountPDict
-#' @importFrom ShortRead id readFasta sread
 #'
 #' @return A two-column data frame matching ASVs to their exact match in the
 #'   reference, with multiple matches indicated by the presence of more than one
@@ -85,7 +83,6 @@ assignSpecies_mod <- function(seqs, refFasta, tryRC=FALSE, n=2000) {
     rownames_to_column(var = 'asv') %>%
     tidyr::separate_rows(Species, sep = '\\/') # "Lengthen" data-- split /-separated column entries out to multiple rows
 
-  # TODO: Last common ancestor??
   gc()
   rval
 }

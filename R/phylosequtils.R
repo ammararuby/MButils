@@ -1,16 +1,20 @@
 #' @title Add New Sample Data into Phyloseq Object
 #'
-#' @description Allows incorporation of new sample data (a dataframe) to be merged into an existing phyloseq object.
+#' @description Allows incorporation of new sample data (a dataframe) to be
+#'   merged into an existing phyloseq object.
 #'
 #' @param dataframe The dataframe containing new data to be incorporated.
 #' @param ps_object The phyloseq object to be updated with new data.
-#' @param variable The variable (column in data) as a string by which to merge new data into phyloseq object. Variable name and values must be identical between the dataframe and the phyloseq object
+#' @param variable The variable (column in data) as a string by which to merge
+#'   new data into phyloseq object. Variable name and values must be identical
+#'   between the dataframe and the phyloseq object
 #'
-#' @import dplyr
+#' @rawNamespace import(dplyr, except = id)
 #' @import tibble
 #' @import phyloseq
 #'
-#' @return An updated phyloseq object with the new data incorporated into sample data.
+#' @return An updated phyloseq object with the new data incorporated into sample
+#'   data.
 #' @export
 #'
 
