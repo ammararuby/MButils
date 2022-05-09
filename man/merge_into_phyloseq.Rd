@@ -11,11 +11,15 @@ merge_into_phyloseq(dataframe, ps_object, variable)
 
 \item{ps_object}{The phyloseq object to be updated with new data.}
 
-\item{variable}{The variable (column in data) as a string by which to merge new data into phyloseq object. Variable name and values must be identical between the dataframe and the phyloseq object}
+\item{variable}{The variable (column in data) as a string by which to merge
+new data into phyloseq object. Variable name and values must be identical
+between the dataframe and the phyloseq object}
 }
 \value{
-An updated phyloseq object with the new data incorporated into sample data.
+An updated phyloseq object with the new data incorporated into sample
+  data.
 }
 \description{
-Allows incorporation of new sample data (a dataframe) to be merged into an existing phyloseq object.
+Allows incorporation of new sample data (a dataframe) to be
+  merged into an existing phyloseq object.
 }
