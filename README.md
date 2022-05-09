@@ -18,7 +18,7 @@ otherwise proceed as follows:
   
   	install_github("ammararuby/MButils")
 # Updates
-As a github package, users will not be automatically prompted to update the package. However, updates are rapidly being added as the package is still under development. To check if your installed version is up-to-date, please install the package dtupdate (https://github.com/hrbrmstr/dtupdate) and follow the instructions presented in their README.
+As a github package, users will not be automatically prompted to update the package. However, updates are often added as the package is still under development. To check if your installed version is up-to-date, please install the package dtupdate (https://github.com/hrbrmstr/dtupdate) and follow the instructions presented in their README.
 
 # Issues
 1. If the following error occurs when trying to load library, please update "ellipsis" and restart R session. 
