@@ -24,7 +24,6 @@ percent_unassigned <- function(ps,
   # Get ASVs without assignment (all entries NA)
   taxtab <- data.frame(ps@tax_table)
   unassigned <- apply(taxtab, 1, function(x){all(is.na(x))})
-  unassigned <- names(unassigned[unassigned == TRUE])
 
   # Get proportion of reads from these ASVs in ASV table
   asvtab <- data.frame(ps@otu_table)
