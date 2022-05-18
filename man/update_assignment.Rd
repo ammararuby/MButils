@@ -12,8 +12,8 @@ update_assignment(ps, ref, format = "species")
 \item{ref}{Path to the reference database (a FASTA file) to use for
 assignment}
 
-\item{format}{One of either \code{'species'} or \code{'taxonomy'} indicating
-if reference database formatted for species (\code{assignSpecies}) or
+\item{format}{One of either \code{'species'} or \code{'taxonomy'}, indicating
+if reference database is formatted for species (\code{assignSpecies}) or
 taxonomy (\code{assignTaxonomy}) assignment. Defaults to \code{'species'}
 with the MButils \code{assignSpecies_mod} function.}
 }

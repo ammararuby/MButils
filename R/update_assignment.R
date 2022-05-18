@@ -6,10 +6,11 @@
 #' @param ps Phyloseq object to be updated
 #' @param ref Path to the reference database (a FASTA file) to use for
 #'   assignment
-#' @param format One of either \code{'species'} or \code{'taxonomy'}, indicating
-#'   if reference database is formatted for species (\code{assignSpecies}) or
-#'   taxonomy (\code{assignTaxonomy}) assignment. Defaults to \code{'species'}
-#'   with the MButils \code{assignSpecies_mod} function.
+#' @param use_function One of either \code{'species'} or \code{'taxonomy'},
+#'   indicating if reference database is use_functionted for species
+#'   (\code{assignSpecies}) or taxonomy (\code{assignTaxonomy}) assignment.
+#'   Defaults to \code{'species'} with the MButils \code{assignSpecies_mod}
+#'   function.
 #'
 #' @import phyloseq
 #'
@@ -17,16 +18,17 @@
 #' @export
 #'
 
-update_assignment <- function(ps, ref, format = 'species'){
+update_assignment <- function(ps, ref, use_function = 'species'){
   # Get ASV table from object
   asvtab <- ps@otu_table@.Data
 
   # Do taxonomic assignment
-  if (format == 'Species'){
+  if (use_function == 'species'){
     # Make assignment
-    taxtab.species <- assignSpecies_mod(seqtab.merged,
-                                        refFasta = ref,
-                                        tryRC = TRUE)
+    cat('Matching ASVs to reference species...\n')
+    taxtab.species <- MButils::assignSpecies_mod(asvtab,
+                                                 refFasta = ref,
+                                                 tryRC = TRUE)
 
     # Get full taxonomy of results
     # Separate ID from species name for querying
@@ -58,14 +60,18 @@ update_assignment <- function(ps, ref, format = 'species'){
                                        taxonomy)
 
     # Collapse multiple identifications to their last common ancestor
+    cat('Calculating last common answer of matched species...\n')
     taxtab <- MButils::lca(taxtab)
   }
 
-  if (format == 'taxonomy'){
+  if (use_function == 'taxonomy'){
 
   }
 
   # Replace in phyloseq object
-  tax_table(ps) <- taxtab
+  tax_table(ps) <- as.matrix(taxtab)
+
+  # Return updated object
+  ps
 
 }
