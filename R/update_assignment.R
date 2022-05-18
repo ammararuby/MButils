@@ -65,7 +65,22 @@ update_assignment <- function(ps, ref, use_function = 'species'){
   }
 
   if (use_function == 'taxonomy'){
-
+    taxtab <-
+      assignTaxonomy(seqtab.merged,
+                     taxLevels = c(
+                       'kingdom',
+                       'phylum',
+                       'class',
+                       'order',
+                       'family',
+                       'genus',
+                       'species',
+                       'subspecies'
+                     ),
+                     refFasta = ref,
+                     tryRC = TRUE) %>%
+      data.frame() %>%
+      rownames_to_column(var = 'asv')
   }
 
   # Replace in phyloseq object
