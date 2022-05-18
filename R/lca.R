@@ -23,7 +23,9 @@ lca <- function(assignment){
     assignment %>%
     group_by(asv) %>%
     summarize_all(n_distinct,
-                  na.rm = TRUE) %>%
+                  # Want to keep NAs in case one match is specified to
+                  # a different level than another
+                  na.rm = FALSE) %>%
     column_to_rownames(var = 'asv')
 
   # Now, relabel all those with >1 name at a particular level as NA
