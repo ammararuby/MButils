@@ -4,20 +4,17 @@
 #'   phyloseq taxonomy table and aggregates them in a new column.
 #'
 #' @param taxtab The taxonomy table of the phyloseq object to be renamed
-#' @param unique If TRUE, appends an integer count to taxa names that are
-#'   duplicated across ASVs.
 #'
 #' @import phyloseq
 #'
 #' @return An updated taxonomy table, with an added column, 'name', that
 #'   contains the name of the lowest phylogenetic level to which that ASV is
-#'   identified.  If unique = TRUE, duplicates are labeled uniquely by appending
-#'   an integer.
+#'   identified.
 #' @export
 #'
 #'
 
-lowest_level <- function(taxtab, unique = FALSE){
+lowest_level <- function(taxtab){
      # Update taxa names from ASV sequence to identified taxon at the most
      # precise phylogenetic level possible
 
@@ -25,15 +22,6 @@ lowest_level <- function(taxtab, unique = FALSE){
      lowest.index <- max.col(!is.na(taxtab), 'last')
      taxtab$name <- taxtab[cbind(seq_along(lowest.index),
                                          lowest.index)]
-
-     # Convert NAs to string representation
-     taxtab$name[is.na(taxtab$name)] <- 'NA'
-
-     # Make unique if desired
-     if (unique == TRUE){
-       taxtab$name <- make.unique(taxtab$name,
-                                  sep = ' ')
-     }
 
      taxtab
 }
