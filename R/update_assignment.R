@@ -78,9 +78,7 @@ update_assignment <- function(ps, ref, use_function = 'species'){
                        'subspecies'
                      ),
                      refFasta = ref,
-                     tryRC = TRUE) %>%
-      data.frame() %>%
-      rownames_to_column(var = 'asv')
+                     tryRC = TRUE)
   }
 
   # Replace in phyloseq object
