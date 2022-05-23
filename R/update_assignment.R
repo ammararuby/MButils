@@ -66,7 +66,7 @@ update_assignment <- function(ps, ref, use_function = 'species'){
 
   if (use_function == 'taxonomy'){
     taxtab <-
-      assignTaxonomy(seqtab.merged,
+      assignTaxonomy(asvtab,
                      taxLevels = c(
                        'kingdom',
                        'phylum',
