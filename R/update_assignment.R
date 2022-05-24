@@ -66,19 +66,19 @@ update_assignment <- function(ps, ref, use_function = 'species'){
 
   if (use_function == 'taxonomy'){
     taxtab <-
-      assignTaxonomy(asvtab,
-                     taxLevels = c(
-                       'kingdom',
-                       'phylum',
-                       'class',
-                       'order',
-                       'family',
-                       'genus',
-                       'species',
-                       'subspecies'
-                     ),
-                     refFasta = ref,
-                     tryRC = TRUE)
+      dada2::assignTaxonomy(asvtab,
+                            taxLevels = c(
+                              'kingdom',
+                              'phylum',
+                              'class',
+                              'order',
+                              'family',
+                              'genus',
+                              'species',
+                              'subspecies'
+                            ),
+                            refFasta = ref,
+                            tryRC = TRUE)
   }
 
   # Replace in phyloseq object
