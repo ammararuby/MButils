@@ -26,12 +26,18 @@ percent_unassigned <- function(ps,
   unassigned <- apply(taxtab, 1, function(x){all(is.na(x))})
 
   # Get proportion of reads from these ASVs in ASV table
-  asvtab <- data.frame(ps@otu_table)
+    asvtab <- data.frame(ps@otu_table)
 
   if(by_sample == FALSE){
     sum(asvtab[, unassigned])/sum(asvtab)}
   else {
-    rowSums(asvtab[, unassigned])/rowSums(asvtab)
+    # If only one ASV, need to calculate differently
+    if (is.null(dim(unassigned))){
+      asvtab[, unassigned]/rowSums(asvtab)
+      # If more, vectorize
+    } else {
+      rowSums(asvtab[, unassigned])/rowSums(asvtab)
+    }
   }
 
 }
