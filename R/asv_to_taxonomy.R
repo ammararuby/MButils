@@ -19,7 +19,7 @@
 #'
 
 asv_to_taxonomy = function(assignment, taxonomy){
-  # TODO: Check that taxonomy table has the right structure
+  # TODO Check that taxonomy table has the right structure
 
   # If present, remove '(nom. inval.)' notation, which interferes with joins
   taxonomy <-
@@ -33,6 +33,8 @@ asv_to_taxonomy = function(assignment, taxonomy){
   # - subspecies
   # - varietas
   # - forma
+  
+  # TODO Do join based on taxid, rather than level by level?
 
   #### Separate taxonomy table into these components ####
   # Form
@@ -132,6 +134,6 @@ asv_to_taxonomy = function(assignment, taxonomy){
 
   taxtab
 
-  # TODO: Some check of completeness? Flag any rows that are suspicious
+  # TODO Some check of completeness? Flag any rows that are suspicious
   # for a bad join?
 }
