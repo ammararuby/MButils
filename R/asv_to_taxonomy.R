@@ -32,6 +32,8 @@ asv_to_taxonomy = function(assignment, taxonomy){
   # - varietas
   # - forma
 
+  # TODO Do join based on taxid, rather than level by level?
+
   #### Separate taxonomy table into these components ####
   # Form
   taxonomy.f <-
