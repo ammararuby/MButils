@@ -72,9 +72,6 @@ update_assignment <- function(ps, ref, use_function = 'species'){
                                                             'forma'))
 
     # Join the two together
-    # taxtab <- MButils::asv_to_taxonomy(taxtab.species,
-    #                                    taxonomy)
-
     taxtab <-
       full_join(taxmap$data$query_data,
                 taxonomy)
@@ -113,7 +110,7 @@ update_assignment <- function(ps, ref, use_function = 'species'){
       entry <-
         entry %>%
         as.character() %>%
-        c(rep(NA, row$pad_na[i])) # Pad
+        c(rep(NA, rows$pad_na[i])) # Pad
 
       names(entry) <- names(taxonomy) # Name
 
