@@ -44,7 +44,7 @@ update_assignment <- function(ps, ref, use_function = 'species'){
                                          column = 'index')
 
     # Build taxonomy and connect back to species assignments
-    taxtab <- asv_to_taxonomy(taxtab.species, taxmap)
+    taxtab <- MButils::asv_to_taxonomy(taxmap)
 
     # Collapse multiple identifications to their last common ancestor
     cat('Calculating last common answer of matched species...\n')

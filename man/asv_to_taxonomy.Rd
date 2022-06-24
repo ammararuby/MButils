@@ -2,15 +2,13 @@
 % Please edit documentation in R/asv_to_taxonomy.R
 \name{asv_to_taxonomy}
 \alias{asv_to_taxonomy}
-\title{Join ASV assignments to taxonomy}
+\title{Join ASV assignments to taxonomy from a taxmap object}
 \usage{
-asv_to_taxonomy(assignment, taxonomy)
+asv_to_taxonomy(taxmap)
 }
 \arguments{
-\item{assignment}{The output of \code{assignSpecies_mod}}
-
-\item{taxonomy}{An \code{R6Class} object of class \code{Taxonomy} produced by
-the \code{metacoder::taxonomy} function.}
+\item{taxmap}{An \code{R6Class} object of class \code{Taxmap} produced by
+the \code{metacoder::lookup_tax_data} function.}
 }
 \value{
 A join of each ASV assignment to its full taxonomy, done from finer
@@ -20,7 +18,5 @@ A join of each ASV assignment to its full taxonomy, done from finer
 The output of the \code{assignSpecies_mod} function is a
   two-column dataframe of ASVs and their taxonomic assignments based on exact
   matching to reference sequences.  This joins the named taxonomic assignment
-  to a full taxonomy queried from NCBI, assuming that all assignments occur
-  to at least the species level, and potentially to subspecies levels
-  (currently hard-coded for subspecies, variety, and form).
+  to a full taxonomy queried from NCBI.
 }

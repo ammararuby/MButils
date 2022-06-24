@@ -1,13 +1,10 @@
-#' @title Join ASV assignments to taxonomy
+#' @title Join ASV assignments to taxonomy from a taxmap object
 #'
 #' @description The output of the \code{assignSpecies_mod} function is a
 #'   two-column dataframe of ASVs and their taxonomic assignments based on exact
 #'   matching to reference sequences.  This joins the named taxonomic assignment
-#'   to a full taxonomy queried from NCBI, assuming that all assignments occur
-#'   to at least the species level, and potentially to subspecies levels
-#'   (currently hard-coded for subspecies, variety, and form).
+#'   to a full taxonomy queried from NCBI.
 #'
-#' @param assignment The output of \code{assignSpecies_mod}
 #' @param taxmap An \code{R6Class} object of class \code{Taxmap} produced by
 #'   the \code{metacoder::lookup_tax_data} function.
 #'
@@ -18,7 +15,7 @@
 #' @export
 #'
 
-asv_to_taxonomy = function(assignment, taxmap){
+asv_to_taxonomy = function(taxmap){
   #### Get taxonomy ####
   # Need this in two forms: one using Latin names, and one using taxon IDs
   # Named taxonomy
