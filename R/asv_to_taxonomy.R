@@ -8,8 +8,8 @@
 #'   (currently hard-coded for subspecies, variety, and form).
 #'
 #' @param assignment The output of \code{assignSpecies_mod}
-#' @param taxonomy An \code{R6Class} object of class \code{Taxonomy} produced by
-#'   the \code{metacoder::taxonomy} function.
+#' @param taxmap An \code{R6Class} object of class \code{Taxmap} produced by
+#'   the \code{metacoder::lookup_tax_data} function.
 #'
 #' @rawNamespace import(dplyr, except = id)
 #'
@@ -18,117 +18,98 @@
 #' @export
 #'
 
-asv_to_taxonomy = function(assignment, taxonomy){
-  # If present, remove '(nom. inval.)' notation, which interferes with joins
-  taxonomy <-
-    mutate(taxonomy,
-           across(.fns = ~gsub(pattern = ' \\(nom\\. inval\\.\\)$',
-                               replacement = '',
-                               .x)))
+asv_to_taxonomy = function(assignment, taxmap){
+  #### Get taxonomy ####
+  # Need this in two forms: one using Latin names, and one using taxon IDs
+  # Named taxonomy
+  taxonomy <- metacoder::taxonomy_table(taxmap,
+                                        use_ranks = c('superkingdom',
+                                                      'kingdom',
+                                                      'phylum',
+                                                      'order',
+                                                      'family',
+                                                      'genus',
+                                                      'species',
+                                                      'subspecies',
+                                                      'varietas',
+                                                      'forma'),
+                                        add_id_col = TRUE)
 
-  # The joins need to be done at sub-species level designations, which in rank
-  # order are:
-  # - subspecies
-  # - varietas
-  # - forma
+  # ID taxonomy
+  taxonomy.ids <- metacoder::taxonomy_table(taxmap,
+                                            value = 'taxon_ids',
+                                            use_ranks = c('superkingdom',
+                                                          'kingdom',
+                                                          'phylum',
+                                                          'order',
+                                                          'family',
+                                                          'genus',
+                                                          'species',
+                                                          'subspecies',
+                                                          'varietas',
+                                                          'forma'))
 
-  # TODO Do join based on taxid, rather than level by level?
+  #### Join to taxmap ####
 
-  #### Separate taxonomy table into these components ####
-  # Form
-  taxonomy.f <-
-    filter(taxonomy, !is.na(forma))
-  # Variety
-  taxonomy.var <-
-    filter(taxonomy, !is.na(varietas) & is.na(forma))
-  # Subspecies
-  taxonomy.ssp <-
-    filter(taxonomy, !is.na(subspecies) & is.na(varietas) & is.na(forma))
-  # Species
-  # For simplicity, just make a list of all species-level entries; this will
-  # ultimately be used in a right join so okay if there are some that won't be
-  # incorporated because they're assigned to a finer level
-  taxonomy.spp <-
-    taxonomy %>%
-    select(superkingdom:species) %>%
-    distinct()
-
-  #### Join each to name, accession, and ASV sequence from assignments ####
-  # Form
-  taxtab.f <-
-    assignment %>%
-    left_join(taxonomy.f, by = c('label' = 'forma')) %>%
-    filter(!is.na(species)) %>%
-    select(asv,
-           superkingdom,
-           kingdom,
-           phylum,
-           order,
-           family,
-           genus,
-           species,
-           subspecies,
-           varietas,
-           forma = label)
-  # Varietas
-  taxtab.var <-
-    assignment %>%
-    left_join(taxonomy.var, by = c('label' = 'varietas')) %>%
-    filter(!is.na(species)) %>%
-    select(asv,
-           superkingdom,
-           kingdom,
-           phylum,
-           order,
-           family,
-           genus,
-           species,
-           subspecies,
-           varietas = label,
-           forma)
-  # Subspecies
-  taxtab.ssp <-
-    assignment %>%
-    left_join(taxonomy.ssp, by = c('label' = 'subspecies')) %>%
-    filter(!is.na(species)) %>%
-    select(asv,
-           superkingdom,
-           kingdom,
-           phylum,
-           order,
-           family,
-           genus,
-           species,
-           subspecies = label,
-           varietas,
-           forma)
-  # Species
-  taxtab.spp <-
-    assignment %>%
-    filter(!(asv %in% c(taxtab.f$asv,
-                        taxtab.var$asv,
-                        taxtab.ssp$asv))) %>%
-    left_join(taxonomy.spp, by = c('label' = 'species')) %>%
-    select(asv,
-           superkingdom,
-           kingdom,
-           phylum,
-           order,
-           family,
-           genus,
-           species = label) %>%
-    # Fill missing columns with NA
-    mutate(subspecies = NA,
-           varietas = NA,
-           forma = NA) %>%
-    distinct()
-
-  #### Join all together ####
   taxtab <-
-    bind_rows(taxtab.spp,
-              taxtab.ssp,
-              taxtab.var,
-              taxtab.f)
+    full_join(taxmap$data$query_data,
+              taxonomy)
+
+  # There will be missing entries here if they are nested (e.g. Cucumis
+  # sativus var. hardwickii will have an entry and C. sativus will not).
+
+  # Fill these in using the ID-based taxonomy
+
+  taxtab.add <-
+    taxtab %>%
+    filter(is.na(superkingdom) & taxon_id != 'unknown') %>%
+    select(taxon_id:label)
+
+  missing <- unique(taxtab.add$taxon_id) # Duplicates if multiple accessions
+
+  # Find the row of each missing taxon in the ID-based taxonomy table
+  # Helper function to get first index (all matches should be identical):
+  first_index <- function(m){
+    # m is a missing taxon ID
+    which(taxonomy.ids == m, arr.ind = TRUE)[1, ]
+  }
+
+  rows <-
+    lapply(missing, first_index) %>%
+    bind_rows() %>%
+    mutate(taxon_id = missing) %>%
+    mutate(pad_na = ncol(taxonomy.ids) - col)
+
+  # Now, extract each row, pad with NAs, and build out taxonomy entries to add
+  # TODO: Vectorize this, do inside mutate?
+  taxonomy.add <- data.frame()
+  # Remove taxon ID to synchronize indices now that join has been done
+  taxonomy <- taxonomy[, 2:ncol(taxonomy)]
+  for (i in seq(nrow(rows))){
+    entry <- taxonomy[rows$row[i], 1:rows$col[i]] # Extract
+    entry <-
+      entry %>%
+      as.character() %>%
+      c(rep(NA, rows$pad_na[i])) # Pad
+
+    names(entry) <- names(taxonomy) # Name
+
+    taxonomy.add <- bind_rows(taxonomy.add, entry) # Join
+  }
+
+  # Join back to ASVs by lowest-level label
+  taxtab.add <-
+    taxonomy.add %>%
+    MButils::lowest_level() %>%
+    left_join(taxtab.add, ., by = c('label' = 'name'))
+
+  #### Make full taxonomy table ####
+
+  taxtab <-
+    taxtab %>%
+    filter(!(label %in% taxtab.add$label)) %>%  # Remove entries we looked up
+    bind_rows(taxtab.add) %>% # Rejoin
+    select(asv, superkingdom:forma)
 
   taxtab
 }
