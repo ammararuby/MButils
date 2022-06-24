@@ -128,7 +128,7 @@ update_assignment <- function(ps, ref, use_function = 'species'){
       taxtab %>%
       filter(!(label %in% taxtab.add$label)) %>%  # Remove entries we looked up
       bind_rows(taxtab.add) %>% # Rejoin
-      select(superkingdom:forma)
+      select(asv, superkingdom:forma)
 
     # Collapse multiple identifications to their last common ancestor
     cat('Calculating last common answer of matched species...\n')
