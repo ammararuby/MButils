@@ -60,7 +60,7 @@ asv_to_taxonomy = function(taxmap){
   taxtab.add <-
     taxtab %>%
     filter(is.na(superkingdom) & taxon_id != 'unknown') %>%
-    select(taxon_id:label)
+    select(taxon_id, index, label, asv)
 
   missing <- unique(taxtab.add$taxon_id) # Duplicates if multiple accessions
 
