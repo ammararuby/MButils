@@ -104,7 +104,7 @@ asv_to_taxonomy = function(taxmap){
 
   taxtab <-
     taxtab %>%
-    filter(!(label %in% taxtab.add$label)) %>%  # Remove entries we looked up
+    filter(!(taxon_id %in% taxtab.add$taxon_id)) %>%  # Remove entries we looked up
     bind_rows(taxtab.add) %>% # Rejoin
     select(asv, superkingdom:forma)
 
