@@ -7,6 +7,7 @@ Maintainer: Ammara Aqeel <ammararuby@gmail.com>
 Description: This package is for sharing and maintaining custom functions written for DNA metabarcoding data analysis as conducted in the laboratory of Dr. Lawrence David at Duke University, Durham, NC.
 Imports:
     Biostrings,
+    crayon,
     dada2,
     dplyr,
     metacoder,
