@@ -15,4 +15,5 @@ import(dplyr, except = id)
 
 import(phyloseq)
 import(tibble)
+importFrom(crayon,strip_style)
 importFrom(rlang,":=")
