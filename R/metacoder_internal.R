@@ -4,17 +4,20 @@
 #' printed depend on the width of the screen by default.
 #'
 #' @param chars (`character`) What to print.
-#' @param prefix (`character` of length 1) What to print before
-#'   `chars`, on the same line.
+#' @param prefix (`character` of length 1) What to print before `chars`, on the
+#'   same line.
 #' @param sep What to put between consecutive values
 #' @param mid What is used to indicate omitted values
 #' @param trunc What is appended onto truncated values
-#' @param max_chars (`numeric` of length 1) The maximum number of
-#'   characters to print.
-#' @param type (`"error"`, `"warning"`, `"message"`, `"cat"`, `"print"`, `"silent"`, `"plain"`)
+#' @param max_chars (`numeric` of length 1) The maximum number of characters to
+#'   print.
+#' @param type (`"error"`, `"warning"`, `"message"`, `"cat"`, `"print"`,
+#'   `"silent"`, `"plain"`)
+#' @importFrom crayon strip_style
 #'
 #' @return `NULL`
 #' @references https://github.com/grunwaldlab/metacoder
+#' @keywords internal
 #' @noRd
 limited_print <- function(chars, prefix = "", sep = ", ", mid = " ... ",
                           trunc_char = "[truncated]",
@@ -99,52 +102,60 @@ limited_print <- function(chars, prefix = "", sep = ", ", mid = " ... ",
   return(invisible(output))
 }
 
-
-#' Return name of database
+#' Check for name/index in input data
 #'
-#' This is meant to return the name of a database when it is not known if the
-#' input is a `TaxonDatabase` object or a simple character vector.
+#' Used by `lookup_tax_data` to check that columm/class_col is valid for the
+#' input data
 #'
-#' @param input Either a character vector or `TaxonDatabase` class
+#' @usage check_class_col(tax_data, column)
 #'
-#' @return The name of the database
+#' @param tax_data A table, list, or vector that contain sequence IDs, taxon
+#'   IDs, or taxon names. * tables: The 'column' option must be used to specify
+#'   which column contains the sequence IDs, taxon IDs, or taxon names. * lists:
+#'   There must be only one item per list entry unless the 'column' option is
+#'   used to specify what item to use in each list entry. * vectors: simply a
+#'   vector of sequence IDs, taxon IDs, or taxon names.
+#' @param column ('character' or 'integer') The name or index of the column that
+#'   contains information used to lookup classifications. This only applies when
+#'   a table or list is supplied to 'tax_data'.
 #' @references https://github.com/grunwaldlab/metacoder
-#' @noRd
-get_database_name <- function(input) {
-  if ("TaxonDatabase" %in% class(input)) {
-    database_name <- input$name
-  } else {
-    database_name <- input
-  }
-  return(database_name)
-}
-
-
-#' Like `strsplit`, but with multiple separators
-#'
-#' Splits items in a vector by multiple separators.
-#'
-#' @param input A character vector
-#' @param split One or more separators to use to split `input`
-#' @param ... Passed to [base::strsplit()]
-#' @references https://github.com/grunwaldlab/metacoder
-#' @noRd
-multi_sep_split <- function(input, split, ...) {
-  lapply(input, function(x) {
-    for (sep in split) {
-      x <- unlist(strsplit(x, split = sep, ...))
-    }
-    return(x)
-  })
-}
-
-
-#' Get indexes of a unique set of the input
-#'
 #' @keywords internal
-unique_mapping <- function(input) {
-  unique_input <- unique(input)
-  vapply(input, function(x) {if (is.na(x)) which(is.na(unique_input)) else which(x == unique_input)}, numeric(1))
+#' @noRd
+function (tax_data, column)
+{
+  if (is.data.frame(tax_data)) {
+    if (is.numeric(column)) {
+      if (column == 0 || abs(column) > ncol(tax_data)) {
+        stop(call. = FALSE, "Column index \"", column,
+             "\" out of bounds. Must be between 1 and ",
+             ncol(tax_data), ".")
+      }
+    }
+    else if (!column %in% colnames(tax_data)) {
+      stop(call. = FALSE, "No column \"", column, "\" in input table. Valid columns include:\n  ",
+           limited_print(colnames(tax_data), type = "silent"))
+    }
+  }
+  else if (is.list(tax_data) || is.vector(tax_data)) {
+    my_lengths <- vapply(tax_data, length, numeric(1))
+    had_col_name <- vapply(tax_data, function(x) column %in%
+                             names(x), logical(1))
+    if (is.numeric(column)) {
+      if (column < 1 || any(column > my_lengths)) {
+        stop(call. = FALSE, "Column index \"", column,
+             "\" out of bounds for inputs:\n", limited_print(which(column >
+                                                                     my_lengths), type = "silent"))
+      }
+    }
+    else if (!all(had_col_name)) {
+      stop(call. = FALSE, "No item named \"", column, "\" in the following inputs:\n",
+           limited_print(which(!had_col_name), type = "silent"))
+    }
+  }
+  else {
+    stop(call. = FALSE, "Cannot read input of class \"",
+         class(tax_data)[1], "\". Input must be a table, list or vector.")
+  }
 }
 
 
@@ -157,6 +168,7 @@ unique_mapping <- function(input) {
 #' @param func (\code{function})
 #' @param ... passed to \code{func}
 #' @references https://github.com/grunwaldlab/metacoder
+#' @keywords internal
 #' @noRd
 map_unique <- function(input, func, ...) {
   input_class <- class(input)
@@ -165,101 +177,57 @@ map_unique <- function(input, func, ...) {
   func(unique_input, ...)[unique_mapping(input)]
 }
 
-
-#' Converts decimal numbers to other bases
+#' Get a vector from a vector/list/table to be used in mapping
 #'
-#' Converts from base 10 to other bases represented by a given set of symbols.
+#' Get a vector from a vector/list/table to be used in mapping
 #'
-#' @param numbers One or more numbers to convert.
-#' @param symbols The set of symbols to use for the new base.
-#' @param base The base to convert to.
-#' @param min_length The minimum number of symbols in each result.
+#' @usage get_sort_var(data, var)
 #'
-#' @return character vector
+#' @param data A vector/list/table
+#' @param var What to get. * For tables, the names of columns can be used. *
+#'   '"index"' : This means to use the index of rows/items * '"name"' : This
+#'   means to use row/item names. * '"value"' : This means to use the values in
+#'   vectors or lists.
+#' @keywords internal
 #' @references https://github.com/grunwaldlab/metacoder
 #' @noRd
-convert_base <- function(numbers, symbols = letters, base = length(symbols),
-                         min_length = 0) {
-
-  # A modification of the `dec2base` function in the `oro.dicom` package
-  #    Copyright (c) 2015, Brandon Whitcher
-  convert_one <- function (n)  {
-    if (is.na(n)) {
-      return(NA_character_)
+get_sort_var <- function (data, var) {
+  if (is.data.frame(data) && var %in% colnames(data)) {
+    return(data[[var]])
+  }
+  else if (var == "{{index}}") {
+    if (is.data.frame(data)) {
+      return(seq_len(nrow(data)))
     }
-    max_length <- max(trunc(log(max(n, 1))/log(base)) + 1, min_length)
-    power <- rep(1, length(n)) * base^((max_length - 1):0)
-    n <- n * rep(1, max_length)
-    digits <- floor((n%%(base * power))/power)
-    paste(symbols[digits + 1], collapse = "")
+    else {
+      return(seq_len(length(data)))
+    }
   }
-
-  vapply(as.integer(numbers), convert_one, character(1))
-
-}
-
-
-#' check for packages
-#'
-#' check for packages, and stop if not installed
-#'
-#' @param package The name of the package
-#'
-#' @return `TRUE` if package is present
-#' @references https://github.com/grunwaldlab/metacoder
-#' @noRd
-check_for_pkg <- function(package) {
-  if (!requireNamespace(package, quietly = TRUE)) {
-    stop("Please install ", package, call. = FALSE)
-  } else {
-    invisible(TRUE)
+  else if (var == "{{name}}") {
+    if (is.data.frame(data)) {
+      return(rownames(data))
+    }
+    else {
+      if (is.null(names(data))) {
+        return(rep(NA_character_, length(data)))
+      }
+      else {
+        return(names(data))
+      }
+    }
   }
-}
-
-
-#' Get input from dots or list
-#'
-#' Get input from dots or list, but not both.
-#' Throws an error if both are supplied.
-#'
-#' @param ... Dots input
-#' @param .list List input
-#'
-#' @return A list of inputs
-#' @references https://github.com/grunwaldlab/metacoder
-#' @noRd
-get_dots_or_list <- function(..., .list = NULL) {
-  dots_input <- list(...)
-  list_input <- .list
-  if (length(dots_input) > 0 && length(list_input) == 0) {
-    return(dots_input)
-  } else if (length(dots_input) == 0 && length(list_input) > 0) {
-    return(list_input)
-  } else if (length(dots_input) > 0 && length(list_input) > 0) {
-    stop("Both `...` and `.list` were supplied. Only one can be used at a time.",
-         call. = FALSE)
-  } else {
-    return(list())
+  else if (var == "{{value}}") {
+    if (is.data.frame(data)) {
+      stop("The `{{value}}` setting of the `mappings` option cannot be used with data.frames.")
+    }
+    else {
+      return(unlist(data))
+    }
+  }
+  else {
+    stop(paste0("No column named \"", var, "\".\""))
   }
 }
-
-#' Format a proportion as a printed percent
-#'
-#' @param prop The proportion
-#' @param ... passed to `format`
-#' @inheritParams base::format
-#'
-#' @return character
-#' @references https://github.com/grunwaldlab/metacoder
-#' @noRd
-to_percent <- function(prop, digits = 3, ...) {
-  if (prop < .00001) {
-    return("< 0.001%")
-  } else {
-    return(paste0(format(prop * 100, digits = digits, ...), '%'))
-  }
-}
-
 
 #' Check length of thing
 #'
@@ -268,6 +236,7 @@ to_percent <- function(prop, digits = 3, ...) {
 #' @param obj
 #'
 #' @return \code{numeric} of length 1.
+#' @keywords internal
 #' @references https://github.com/grunwaldlab/metacoder
 #' @noRd
 length_of_thing <- function(obj) {
@@ -276,4 +245,38 @@ length_of_thing <- function(obj) {
   } else {
     return(length(obj))
   }
+}
+
+#' lapply with progress bars
+#'
+#' Imitates lapply with optional progress bars
+#'
+#' @usage progress_lapply(X, FUN, progress = interactive(), ...)
+#' @param X The thing to iterate over
+#' @param FUN The function to apply to each element
+#' @param progress (logical of length 1) Whether or not to print a progress bar.
+#'   Default is to only print a progress bar during interactive use.
+#' @param ... Passed to function
+#'
+#' @return \code{numeric} of length 1.
+#' @keywords internal
+#' @references https://github.com/grunwaldlab/metacoder
+#' @noRd
+progress_lapply <- function (X, FUN, progress = interactive(), ...)
+{
+  if (progress) {
+    progress_bar <- utils::txtProgressBar(min = 0, max = length(X),
+                                          style = 3)
+    one_iteration <- function(index) {
+      output <- FUN(X[[index]], ...)
+      utils::setTxtProgressBar(progress_bar, index)
+      return(output)
+    }
+    output <- lapply(seq_len(length(X)), one_iteration)
+    close(progress_bar)
+  }
+  else {
+    output <- lapply(X, FUN, ...)
+  }
+  return(output)
 }

@@ -159,7 +159,7 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
   }
 
   # Check that a supported database is being used
-  supported_databases <- names(database_list)
+  supported_databases <- names(metacoder::database_list)
   database <- tolower(database)
   if (! database %in% supported_databases) {
     stop(paste0('The database "', database,
