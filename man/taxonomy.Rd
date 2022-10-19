@@ -5,7 +5,7 @@
 \alias{taxonomy}
 \title{Example taxonomy data structure}
 \format{
-An object of class \code{function} of length 1.
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 4 rows and 10 columns.
 }
 \usage{
 taxonomy
