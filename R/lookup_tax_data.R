@@ -147,13 +147,22 @@
 #'   map_data(x, counts, my_names)
 #' }
 #' @export
+
+# Get unexported functions from metacoder's namespace
+check_class_col <- utils::getFromNamespace("check_class_col", "metacoder")
+get_sort_var <- utils::getFromNamespace("get_sort_var", "metacoder")
+length_of_thing <- utils::getFromNamespace("length_of_thing", "metacoder")
+limited_print <- utils::getFromNamespace("limited_print", "metacoder")
+map_unique <- utils::getFromNamespace("map_unique", "metacoder")
+progress_lapply <- utils::getFromNamespace("progress_lapply", "metacoder")
+
 lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
                             mappings = c(), database = "ncbi",
                             include_tax_data = TRUE, use_database_ids = TRUE,
                             ask = TRUE) {
 
   # Check for zero-length inputs
-  if (metacoder::length_of_thing(tax_data) <= 0) {
+  if (length_of_thing(tax_data) <= 0) {
     return(metacoder::taxmap(data = list(tax_data = tax_data)))
   }
 
@@ -164,11 +173,11 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
     stop(paste0('The database "', database,
                 '" is not a valid database for looking up that taxonomy of ',
                 'sequnece ids. Valid choices include:\n',
-                metacoder::limited_print(supported_databases, type = "silent")))
+                limited_print(supported_databases, type = "silent")))
   }
 
   # Check that column exists
-  metacoder::check_class_col(tax_data, column)
+  check_class_col(tax_data, column)
 
   # Hidden parameters
   batch_size <- 100
@@ -184,7 +193,7 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
       failed_names <- unique(names(failed_queries[failed_queries]))
       error_msg <- paste0('The following ', length(failed_names),
                           ' unique inputs could not be looked up:\n  ',
-                          metacoder::limited_print(failed_names,
+                          limited_print(failed_names,
                                                    type = "silent"))
       if (ask) {
         error_msg <- paste0(error_msg, "\n",
@@ -228,10 +237,10 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
         taxize::classification(id, ask = FALSE, rows = 1, db = database,
                                message = FALSE)
       }
-      output <- metacoder::progress_lapply(ids, lookup_one)
+      output <- progress_lapply(ids, lookup_one)
       return(output)
     }
-    tryCatch(msgs <- utils::capture.output(raw_result <- metacoder::map_unique(ids, lookup_all),
+    tryCatch(msgs <- utils::capture.output(raw_result <- map_unique(ids, lookup_all),
                                            type = "message"),
              error = function(e) stop(e))
 
@@ -252,7 +261,7 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
            paste0('The database "', database,
                   '" is not a valid database for looking up that taxonomy of ',
                   'sequnece ids. Valid choices include:\n',
-                  metacoder::limited_print(supported_databases, type = "silent")))
+                  limited_print(supported_databases, type = "silent")))
     }
 
     # Look up classifications
@@ -272,10 +281,10 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
 
 
 
-      output <- metacoder::progress_lapply(ids, lookup_one)
+      output <- progress_lapply(ids, lookup_one)
       return(output)
     }
-    tryCatch(msgs <- utils::capture.output(raw_result <- metacoder::map_unique(ids, lookup_all),
+    tryCatch(msgs <- utils::capture.output(raw_result <- map_unique(ids, lookup_all),
                                            type = "message"),
              error = function(e) stop(e))
 
@@ -297,7 +306,7 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
         taxize::classification(my_name, ask = ask, db = database,
                                messages = FALSE)
       }
-      output <- metacoder::progress_lapply(my_names, lookup_one)
+      output <- progress_lapply(my_names, lookup_one)
       return(output)
     }
     tryCatch(msgs <- utils::capture.output(raw_result <- map_unique(my_names, lookup_all),
@@ -317,7 +326,7 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
             ' unique taxon names from database "', database, '" using fuzzy name matching...')
 
     # Look up similar taxon names
-    corrected <- metacoder::map_unique(my_names, correct_taxon_names, database = database)
+    corrected <- map_unique(my_names, correct_taxon_names, database = database)
 
     # Check for not found names
     not_found <- unique(names(corrected[is.na(corrected)]))
@@ -325,7 +334,7 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
       warning(call. = FALSE,
               "No taxon name was found that was similar to the following ",
               length(not_found), " inputs:\n  ",
-              metacoder::limited_print(type = "silent", not_found))
+              limited_print(type = "silent", not_found))
 
     }
 
@@ -339,7 +348,7 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
       after <- corrected[changed]
       change_char <- unique(paste0('"', before, '" -> "', after, '"'))
       message("The following ", length(change_char), " names were corrected before looking up classifications:\n  ",
-              metacoder::limited_print(type = "silent", change_char))
+              limited_print(type = "silent", change_char))
     }
 
     # Run standard taxon name lookup
@@ -388,7 +397,7 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
     mappping_cols <- c(mappping_cols, "{{value}}")
   }
   for (col in mappping_cols) {
-    combined_class[tax_data_indexes, col] <- metacoder::get_sort_var(tax_data, col)
+    combined_class[tax_data_indexes, col] <- get_sort_var(tax_data, col)
   }
 
   # Add input data to datasets included in the resulting object
