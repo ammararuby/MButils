@@ -1,25 +1,25 @@
-#' Convert one or more data sets to taxmap
+#' @title Convert one or more data sets to taxmap
 #'
-#' Looks up taxonomic data from NCBI sequence IDs, taxon IDs, or taxon names
-#' that are present in a table, list, or vector. Also can incorporate additional
-#' associated datasets.
+#' @description This function is a modification of metacoder's
+#'   \code{lookup_tax_data}, which looks up taxonomic data from NCBI sequence
+#'   IDs, taxon IDs, or taxon names that are present in a table, list, or
+#'   vector. Also can incorporate additional associated datasets. This edit
+#'   automatically resubmits the query to NCBI if the request times out.
 #'
 #' @param tax_data A table, list, or vector that contain sequence IDs, taxon
-#'   IDs, or taxon names.
-#'   * tables: The `column` option must be used to specify which column
-#'   contains the sequence IDs, taxon IDs, or taxon names.
-#'   * lists: There must be only one item per list entry unless the `column`
-#'   option is used to specify what item to use in each list entry.
-#'   * vectors: simply a vector of sequence IDs, taxon IDs, or taxon names.
+#'   IDs, or taxon names. * tables: The `column` option must be used to specify
+#'   which column contains the sequence IDs, taxon IDs, or taxon names. * lists:
+#'   There must be only one item per list entry unless the `column` option is
+#'   used to specify what item to use in each list entry. * vectors: simply a
+#'   vector of sequence IDs, taxon IDs, or taxon names.
 #' @param type What type of information can be used to look up the
-#'   classifications. Takes one of the following values:
-#'   * `"seq_id"`: A database sequence ID with an associated classification
-#'   (e.g. NCBI accession numbers).
-#'   * `"taxon_id"`: A reference database taxon ID (e.g. a NCBI taxon ID)
-#'   * `"taxon_name"`: A single taxon name (e.g. "Homo sapiens" or "Primates")
-#'   * `"fuzzy_name"`: A single taxon name, but check for misspellings first.
-#'   Only use if you think there are misspellings. Using `"taxon_name"` is
-#'   faster.
+#'   classifications. Takes one of the following values: * `"seq_id"`: A
+#'   database sequence ID with an associated classification (e.g. NCBI accession
+#'   numbers). * `"taxon_id"`: A reference database taxon ID (e.g. a NCBI taxon
+#'   ID) * `"taxon_name"`: A single taxon name (e.g. "Homo sapiens" or
+#'   "Primates") * `"fuzzy_name"`: A single taxon name, but check for
+#'   misspellings first. Only use if you think there are misspellings. Using
+#'   `"taxon_name"` is faster.
 #' @param column (`character` or `integer`) The name or index of the column that
 #'   contains information used to lookup classifications. This only applies when
 #'   a table or list is supplied to `tax_data`.
@@ -28,22 +28,21 @@
 #'   these data sets relate to the `tax_data` and, by inference, what taxa apply
 #'   to each item.
 #' @param mappings (named `character`) This defines how the taxonomic
-#'   information in `tax_data` applies to data in `datasets`. This option
-#'   should have the same number of inputs as `datasets`, with values
-#'   corresponding to each dataset. The names of the character vector specify
-#'   what information in `tax_data` is shared with info in each `dataset`, which
-#'   is specified by the corresponding values of the character vector. If there
-#'   are no shared variables, you can add `NA` as a placeholder, but you could
-#'   just leave that data out since it is not benefiting from being in the
-#'   taxmap object. The names/values can be one of the following:
-#'   * For tables, the names of columns can be used.
-#'   * `"{{index}}"` : This means to use the index of rows/items
-#'   * `"{{name}}"`  : This means to use row/item names.
-#'   * `"{{value}}"` : This means to use the values in vectors or lists. Lists
+#'   information in `tax_data` applies to data in `datasets`. This option should
+#'   have the same number of inputs as `datasets`, with values corresponding to
+#'   each dataset. The names of the character vector specify what information in
+#'   `tax_data` is shared with info in each `dataset`, which is specified by the
+#'   corresponding values of the character vector. If there are no shared
+#'   variables, you can add `NA` as a placeholder, but you could just leave that
+#'   data out since it is not benefiting from being in the taxmap object. The
+#'   names/values can be one of the following: * For tables, the names of
+#'   columns can be used. * `"{{index}}"` : This means to use the index of
+#'   rows/items * `"{{name}}"`  : This means to use row/item names. *
+#'   `"{{value}}"` : This means to use the values in vectors or lists. Lists
 #'   will be converted to vectors using [unlist()].
 #' @param database (`character`) The name of a database to use to look up
 #'   classifications. Options include "ncbi", "itis", "eol", "col", "tropicos",
-#'  and "nbn".
+#'   and "nbn".
 #' @param include_tax_data (`TRUE`/`FALSE`) Whether or not to include `tax_data`
 #'   as a dataset, like those in `datasets`.
 #' @param use_database_ids (`TRUE`/`FALSE`) Whether or not to use downloaded
@@ -152,15 +151,15 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
                             mappings = c(), database = "ncbi",
                             include_tax_data = TRUE, use_database_ids = TRUE,
                             ask = TRUE) {
-  
+
   # Check for zero-length inputs
   if (length_of_thing(tax_data) <= 0) {
     return(taxmap(data = list(tax_data = tax_data)))
   }
-  
+
   # Make sure taxize is installed
   check_for_pkg("taxize")
-  
+
   # Check that a supported database is being used
   supported_databases <- names(database_list)
   database <- tolower(database)
@@ -170,16 +169,16 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
                 'sequnece ids. Valid choices include:\n',
                 limited_print(supported_databases, type = "silent")))
   }
-  
+
   # Check that column exists
   check_class_col(tax_data, column)
-  
+
   # Hidden parameters
   batch_size <- 100
   max_print <- 10
   internal_class_sep <- "||||"
   internal_class_name <- "___class_string___"
-  
+
   # Define lookup functions
   format_class_table <- function(class_table) {
     # Complain about failed queries
@@ -200,14 +199,14 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
       }
       warning(error_msg, call. = FALSE)
     }
-    
+
     # Rename columns of result
     col_names <- c(paste0(database, "_name"),
                    paste0(database, "_rank"),
                    paste0(database, "_id"))
     class_table[! failed_queries] <- lapply(class_table[! failed_queries],
                                             function(x) stats::setNames(x, col_names))
-    
+
     # Add placeholders for failed requests
     class_table[failed_queries] <- lapply(seq_len(sum(failed_queries)),
                                           function(i) {
@@ -219,12 +218,12 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
                                           })
     return(class_table)
   }
-  
-  
+
+
   use_taxon_id <- function(ids) {
     message("Looking up classifications for ", length(unique(ids)),
             ' unique taxon IDs from database "', database, '"...')
-    
+
     # Look up classifications
     lookup_all <- function(ids) {
       lookup_one <- function(id) {
@@ -237,16 +236,16 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
     tryCatch(msgs <- utils::capture.output(raw_result <- map_unique(ids, lookup_all),
                                            type = "message"),
              error = function(e) stop(e))
-    
-    
+
+
     # Remove repeated messages (e.g. no NCBI API key)
     on.exit(message(paste0(unique(msgs), collapse = "\n")))
-    
+
     # Reformat result
     result <- stats::setNames(unlist(raw_result, recursive = FALSE), ids)
     format_class_table(result)
   }
-  
+
   use_seq_id <- function(ids) {
     # Check that a supported database is being used
     supported_databases <- c("ncbi")
@@ -257,7 +256,7 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
                   'sequnece ids. Valid choices include:\n',
                   limited_print(supported_databases, type = "silent")))
     }
-    
+
     # Look up classifications
     message("Looking up classifications for ", length(unique(ids)), " unique sequence IDs from NCBI...")
     lookup_all <- function(ids) {
@@ -268,32 +267,32 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
         while(is.null(result) && attempt <= 5){
           attempt <- attempt + 1
           try(result <- taxize::classification(taxize::genbank2uid(id)[1], db = database))
-          
+
         }
         result
       }
-      
-      
-      
+
+
+
       output <- progress_lapply(ids, lookup_one)
       return(output)
     }
     tryCatch(msgs <- utils::capture.output(raw_result <- map_unique(ids, lookup_all),
                                            type = "message"),
              error = function(e) stop(e))
-    
+
     # Remove repeated messages (e.g. no NCBI API key)
     on.exit(message(paste0(unique(msgs), collapse = "\n")))
-    
+
     # Reformat result
     result <- stats::setNames(unlist(raw_result, recursive = FALSE), ids)
     format_class_table(result)
   }
-  
+
   use_taxon_name <- function(my_names) {
     message("Looking up classifications for ", length(unique(my_names)),
             ' unique taxon names from database "', database, '"...')
-    
+
     # Look up classifications
     lookup_all <- function(my_names) {
       lookup_one <- function(my_name) {
@@ -306,22 +305,22 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
     tryCatch(msgs <- utils::capture.output(raw_result <- map_unique(my_names, lookup_all),
                                            type = "message"),
              error = function(e) stop(e))
-    
+
     # Remove repeated messages (e.g. no NCBI API key)
     on.exit(message(paste0(unique(msgs), collapse = "\n")))
-    
+
     # Reformat result
     result <- stats::setNames(unlist(raw_result, recursive = FALSE), my_names)
     format_class_table(result)
   }
-  
+
   use_taxon_name_fuzzy <- function(my_names) {
     message("Looking up classifications for ", length(unique(my_names)),
             ' unique taxon names from database "', database, '" using fuzzy name matching...')
-    
+
     # Look up similar taxon names
     corrected <- map_unique(my_names, correct_taxon_names, database = database)
-    
+
     # Check for not found names
     not_found <- unique(names(corrected[is.na(corrected)]))
     if (length(not_found) > 0) {
@@ -329,12 +328,12 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
               "No taxon name was found that was similar to the following ",
               length(not_found), " inputs:\n  ",
               limited_print(type = "silent", not_found))
-      
+
     }
-    
+
     # Replace not found values with original input
     corrected[is.na(corrected)] <- names(corrected[is.na(corrected)])
-    
+
     # Check for changed names
     changed <- tolower(names(corrected)) != tolower(corrected) & ! is.na(corrected) & ! is.na(names(corrected))
     if (any(changed)) {
@@ -344,16 +343,16 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
       message("The following ", length(change_char), " names were corrected before looking up classifications:\n  ",
               limited_print(type = "silent", change_char))
     }
-    
+
     # Run standard taxon name lookup
     use_taxon_name(corrected)
   }
-  
+
   lookup_funcs <- list("seq_id" = use_seq_id,
                        "taxon_id" = use_taxon_id,
                        "taxon_name" = use_taxon_name,
                        "fuzzy_name" = use_taxon_name_fuzzy)
-  
+
   # Get query information
   if (is.data.frame(tax_data)) { # is table
     query <- as.character(tax_data[[column]])
@@ -364,7 +363,7 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
   } else if (is.vector(tax_data)) { # is vector
     query <- as.character(tax_data)
   }
-  
+
   # Look up taxonomic classifications
   if (! type %in% names(lookup_funcs)) {
     stop(paste0('Invalid "type" option. It must be one of the following:\n  ',
@@ -383,7 +382,7 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
   combined_class <- cbind(internal_class_frame,
                           combined_class,
                           stringsAsFactors = FALSE)
-  
+
   # Add mapping columns to classfication data
   tax_data_indexes <- cumsum(vapply(classifications, nrow, numeric(1)))
   mappping_cols <- unique(c(names(mappings), "{{index}}", "{{name}}"))
@@ -393,13 +392,13 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
   for (col in mappping_cols) {
     combined_class[tax_data_indexes, col] <- get_sort_var(tax_data, col)
   }
-  
+
   # Add input data to datasets included in the resulting object
   if (include_tax_data) {
     datasets <- c(list(query_data = tax_data), datasets)
     mappings <- c("{{index}}" = "{{index}}", mappings)
   }
-  
+
   # Make taxmap object
   output <- parse_tax_data(tax_data = combined_class,
                            datasets = datasets,
@@ -410,23 +409,23 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
                            mappings = mappings,
                            include_tax_data = include_tax_data)
   output$data$class_data <- NULL
-  
+
   if (include_tax_data) {
     # Remove mapping columns from output
     output$data$tax_data[mappping_cols] <- NULL
-    
+
     # Remove class column from output
     output$data$tax_data[internal_class_name] <- NULL
-    
+
     # Fix incorrect taxon ids for tax_data
     #   This is due to the "{{index}}" being interpreted as a column name,
     #   which is needed for the user-defined data sets to be parsed right.
     output$data$tax_data$taxon_id <- output$input_ids
-    
+
     # Remove duplicates from `tax_data`
     output$data$tax_data <- output$data$tax_data[!duplicated(output$data$tax_data), ]
   }
-  
+
   # Replace standard taxon ids with database taxon ids
   if (use_database_ids) {
     taxon_id_col <- paste0(database, "_id")
@@ -435,6 +434,6 @@ lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
                                                             unique(output$input_ids))]
     output$replace_taxon_ids(new_ids)
   }
-  
+
   return(output)
 }
