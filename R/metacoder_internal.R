@@ -15,7 +15,7 @@
 #'
 #' @return `NULL`
 #' @references https://github.com/grunwaldlab/metacoder
-#' @keywords internal
+#' @noRd
 limited_print <- function(chars, prefix = "", sep = ", ", mid = " ... ",
                           trunc_char = "[truncated]",
                           max_chars = getOption("width") - nchar(prefix) - 5,
@@ -108,8 +108,8 @@ limited_print <- function(chars, prefix = "", sep = ", ", mid = " ... ",
 #' @param input Either a character vector or `TaxonDatabase` class
 #'
 #' @return The name of the database
-#'
-#' @keywords internal
+#' @references https://github.com/grunwaldlab/metacoder
+#' @noRd
 get_database_name <- function(input) {
   if ("TaxonDatabase" %in% class(input)) {
     database_name <- input$name
@@ -127,8 +127,8 @@ get_database_name <- function(input) {
 #' @param input A character vector
 #' @param split One or more separators to use to split `input`
 #' @param ... Passed to [base::strsplit()]
-#'
-#' @keywords internal
+#' @references https://github.com/grunwaldlab/metacoder
+#' @noRd
 multi_sep_split <- function(input, split, ...) {
   lapply(input, function(x) {
     for (sep in split) {
@@ -156,8 +156,8 @@ unique_mapping <- function(input) {
 #' @param input What to pass to \code{func}
 #' @param func (\code{function})
 #' @param ... passed to \code{func}
-#'
-#' @keywords internal
+#' @references https://github.com/grunwaldlab/metacoder
+#' @noRd
 map_unique <- function(input, func, ...) {
   input_class <- class(input)
   unique_input <- unique(input)
@@ -176,8 +176,8 @@ map_unique <- function(input, func, ...) {
 #' @param min_length The minimum number of symbols in each result.
 #'
 #' @return character vector
-#'
-#' @keywords internal
+#' @references https://github.com/grunwaldlab/metacoder
+#' @noRd
 convert_base <- function(numbers, symbols = letters, base = length(symbols),
                          min_length = 0) {
 
@@ -206,8 +206,8 @@ convert_base <- function(numbers, symbols = letters, base = length(symbols),
 #' @param package The name of the package
 #'
 #' @return `TRUE` if package is present
-#'
-#' @keywords internal
+#' @references https://github.com/grunwaldlab/metacoder
+#' @noRd
 check_for_pkg <- function(package) {
   if (!requireNamespace(package, quietly = TRUE)) {
     stop("Please install ", package, call. = FALSE)
@@ -226,8 +226,8 @@ check_for_pkg <- function(package) {
 #' @param .list List input
 #'
 #' @return A list of inputs
-#'
-#' @keywords internal
+#' @references https://github.com/grunwaldlab/metacoder
+#' @noRd
 get_dots_or_list <- function(..., .list = NULL) {
   dots_input <- list(...)
   list_input <- .list
@@ -245,15 +245,13 @@ get_dots_or_list <- function(..., .list = NULL) {
 
 #' Format a proportion as a printed percent
 #'
-#' Format a proportion as a printed percent
-#'
 #' @param prop The proportion
 #' @param ... passed to `format`
 #' @inheritParams base::format
 #'
 #' @return character
-#'
-#' @keywords internal
+#' @references https://github.com/grunwaldlab/metacoder
+#' @noRd
 to_percent <- function(prop, digits = 3, ...) {
   if (prop < .00001) {
     return("< 0.001%")
@@ -270,8 +268,8 @@ to_percent <- function(prop, digits = 3, ...) {
 #' @param obj
 #'
 #' @return \code{numeric} of length 1.
-#'
-#' @keywords internal
+#' @references https://github.com/grunwaldlab/metacoder
+#' @noRd
 length_of_thing <- function(obj) {
   if (is.data.frame(obj)) {
     return(nrow(obj))
