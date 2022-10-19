@@ -39,9 +39,9 @@ update_assignment <- function(ps, ref, use_function = 'species'){
                sep = '\\s',
                extra = 'merge')
 
-    taxmap <- metacoder::lookup_tax_data(taxtab.species,
-                                         type = 'seq_id',
-                                         column = 'index')
+    taxmap <- MButils::lookup_tax_data(taxtab.species,
+                                       type = 'seq_id',
+                                       column = 'index')
 
     # Build taxonomy and connect back to species assignments
     taxtab <- MButils::asv_to_taxonomy(taxmap)
