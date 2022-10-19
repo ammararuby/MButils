@@ -148,14 +148,6 @@
 #' }
 #' @export
 
-# Get unexported functions from metacoder's namespace
-check_class_col <- utils::getFromNamespace("check_class_col", "metacoder")
-get_sort_var <- utils::getFromNamespace("get_sort_var", "metacoder")
-length_of_thing <- utils::getFromNamespace("length_of_thing", "metacoder")
-limited_print <- utils::getFromNamespace("limited_print", "metacoder")
-map_unique <- utils::getFromNamespace("map_unique", "metacoder")
-progress_lapply <- utils::getFromNamespace("progress_lapply", "metacoder")
-
 lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
                             mappings = c(), database = "ncbi",
                             include_tax_data = TRUE, use_database_ids = TRUE,
