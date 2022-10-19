@@ -121,8 +121,7 @@ limited_print <- function(chars, prefix = "", sep = ", ", mid = " ... ",
 #' @references https://github.com/grunwaldlab/metacoder
 #' @keywords internal
 #' @noRd
-function (tax_data, column)
-{
+check_class_col <- function (tax_data, column){
   if (is.data.frame(tax_data)) {
     if (is.numeric(column)) {
       if (column == 0 || abs(column) > ncol(tax_data)) {
@@ -158,6 +157,23 @@ function (tax_data, column)
   }
 }
 
+#' Get indexes of a unique set of the input
+#'
+#' @description Get indexes of a unique set of the input
+#'
+#' @usage unique_mapping(input)
+#'
+#' @references https://github.com/grunwaldlab/metacoder
+#' @keywords internal
+#' @noRd
+unique_mapping <- function (input) {
+  unique_input <- unique(input)
+  vapply(input, function(x) {
+    if (is.na(x))
+      which(is.na(unique_input))
+    else which(x == unique_input)
+  }, numeric(1))
+}
 
 #' Run a function on unique values of a iterable
 #'
