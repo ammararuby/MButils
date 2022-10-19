@@ -12,6 +12,7 @@
 #'   Defaults to \code{'species'} with the MButils \code{assignSpecies_mod}
 #'   function.
 #'
+#' @importFrom tidyr separate
 #' @import phyloseq
 #'
 #' @return An updated phyloseq object.
@@ -34,7 +35,7 @@ update_assignment <- function(ps, ref, use_function = 'species'){
     # Separate ID from species name for querying
     taxtab.species <-
       taxtab.species %>%
-      separate(col = Species,
+      tidyr::separate(col = Species,
                into = c('index', 'label'),
                sep = '\\s',
                extra = 'merge')
