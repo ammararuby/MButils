@@ -146,6 +146,8 @@
 #'   map_data(x, my_names, foods)
 #'   map_data(x, counts, my_names)
 #' }
+#' @import metacoder
+#' @import taxize
 #' @export
 lookup_tax_data <- function(tax_data, type, column = 1, datasets = list(),
                             mappings = c(), database = "ncbi",

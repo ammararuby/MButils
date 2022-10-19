@@ -1,6 +1,6 @@
 Package: MButils
 Type: Package
-Title: Custom Function Container for DNA Metabarcoding
+Title: Utility functions for DNA metabarcoding
 Version: 0.1.2
 Author: Ammara Aqeel <ammararuby@gmail.com>
 Maintainer: Ammara Aqeel <ammararuby@gmail.com>
@@ -9,9 +9,11 @@ Imports:
     Biostrings,
     dada2,
     dplyr,
+    metacoder,
     phyloseq,
     ShortRead,
     rlang,
+    taxize,
     tibble,
     tidyr
 License: GPL-3
