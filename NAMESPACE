@@ -2,6 +2,7 @@
 
 export(assignSpecies_mod)
 export(asv_to_taxonomy)
+export(biplot)
 export(lca)
 export(lookup_tax_data)
 export(lowest_level)
@@ -13,6 +14,7 @@ import(dada2)
 import(dplyr, except = id)
 import(dplyr, except = id)
 
+import(ggplot2)
 import(phyloseq)
 import(tibble)
 importFrom(crayon,strip_style)
