@@ -12,11 +12,11 @@ biplot(pca, top.n, data, color, base_only)
 \item{top.n}{The number of loadings to plot (ranked by descending magnitude).
 Default 5}
 
-\item{data}{A `data.frame` of sample metadata variables with a column named
-`row` that maps to rownames (i.e., sample names) in the PCA output.}
+\item{data}{A `data.frame` of sample metadata variables row names matching
+those in the PCA output.}
 
-\item{color}{The sample metadata variable (a column in provided `data` by
-which to color plotted points.}
+\item{color}{The sample metadata variable (a column in provided `data`) by
+which to color plotted points.  Taken as a string (i.e. 'subj')}
 
 \item{base_only}{Should only the base PCA be returned, without loadings?
 Default FALSE}
