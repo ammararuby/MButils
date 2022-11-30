@@ -10,6 +10,7 @@ Imports:
     crayon,
     dada2,
     dplyr,
+    ggplot2,
     metacoder,
     phyloseq,
     ShortRead,
