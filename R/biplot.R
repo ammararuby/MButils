@@ -69,7 +69,7 @@ biplot <- function(pca, top.n = 5, data, color, base_only = FALSE){
 
      pca.plot <-
           ggplot(pca.df, aes(PC1, PC2, color = .data[[color]])) +
-          geom_point(alpha = 0.5) +
+          geom_point(size = 3, alpha = 0.7) +
           coord_equal() +
           xlim(-limit, limit) + ylim(-limit, limit) +
           labs(x = paste0(' PC1 (', ve.pc1, '%)'),
