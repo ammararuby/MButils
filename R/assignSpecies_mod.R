@@ -37,7 +37,7 @@ assignSpecies_mod <- function(seqs, refFasta, tryRC=FALSE, n=2000) {
   seqs <- getSequences(seqs)
   # Read in the reference fasta
   refsr <- ShortRead::readFasta(refFasta)
-  ids <- as(ShortRead::id(refsr), "character")
+  species <- as(ShortRead::id(refsr), "character")
   # Crude format check
   if(!length(unlist(strsplit(ids[[1]], "\\s"))) >= 3) {
     if(length(unlist(gregexpr(";", ids[[1]]))) >= 3) {
@@ -46,9 +46,6 @@ assignSpecies_mod <- function(seqs, refFasta, tryRC=FALSE, n=2000) {
       stop("Incorrect reference file format for assignSpecies.")
     }
   }
-  ex <- '>\\d+\\s'
-  species <- sapply(unlist(ids), sub, pattern = ex, replacement = '')
-  names(species) <- NULL
 
   # Identify the exact hits
   hits <- vector("list", length(seqs))
@@ -72,6 +69,7 @@ assignSpecies_mod <- function(seqs, refFasta, tryRC=FALSE, n=2000) {
       gc()
     }
   }
+
   # Get genus species return strings
   rval <- cbind(unlist(sapply(hits, mapHits_mod, refs=species)))
   colnames(rval) <- c("Species")
