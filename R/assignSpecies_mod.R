@@ -39,8 +39,8 @@ assignSpecies_mod <- function(seqs, refFasta, tryRC=FALSE, n=2000) {
   refsr <- ShortRead::readFasta(refFasta)
   species <- as(ShortRead::id(refsr), "character")
   # Crude format check
-  if(!length(unlist(strsplit(ids[[1]], "\\s"))) >= 3) {
-    if(length(unlist(gregexpr(";", ids[[1]]))) >= 3) {
+  if(!length(unlist(strsplit(species[[1]], "\\s"))) >= 3) {
+    if(length(unlist(gregexpr(";", species[[1]]))) >= 3) {
       stop("Incorrect reference file format for assignSpecies (this looks like a file formatted for assignTaxonomy).")
     } else {
       stop("Incorrect reference file format for assignSpecies.")
